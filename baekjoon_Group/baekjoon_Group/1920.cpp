@@ -7,15 +7,21 @@ int length;
 
 int arrayCheck(int k)
 {
-	int upper =0;
-	int lower =length;
+	int upper =length-1;
+	int lower =0;
 	while (true)
 	{
 		if (k <= numArray[(lower + upper) / 2]){
+			//printf("%lld %lld\n", numArray[lower], numArray[upper]);
+
 			upper = (lower + upper) / 2;
+			
 		}
 		else{
+			//printf("%lld %lld\n", numArray[lower], numArray[upper]);
+			
 			lower = (lower + upper) / 2;
+			
 		}
 
 		if (upper - lower <= 1)
@@ -37,14 +43,17 @@ int main()
 	numArray = (long long*)malloc(sizeof(long long) * length);
 	for (int i = 0; i < length; i++)
 		scanf("%lld", &numArray[i]);
+	
+	sort(numArray, numArray + length);
+
+
+
+
 	int length2;
 	cin >> length2;
 	int check;
 
-	/// <summary>
-	/// 정렬알고리즘 추가 필요
-	/// </summary>
-	/// <returns></returns>
+	
 	
 	for (int i = 0; i < length2; i++)
 	{

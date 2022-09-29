@@ -5,44 +5,57 @@ using namespace std;
 long long* numArray;
 int length;
 
+
+
+
+
+
 int arrayCheck(int k)
 {
 	int upper =length-1;
 	int lower =0;
 	while (true)
 	{
-		if (k <= numArray[(lower + upper) / 2]){
+		int mid = (lower + upper) / 2;
+		if (k < numArray[mid]) {
 			//printf("%lld %lld\n", numArray[lower], numArray[upper]);
 
-			upper = (lower + upper) / 2;
-			
+			upper = mid;
+
 		}
-		else{
+		else if (k > numArray[mid]) {
 			//printf("%lld %lld\n", numArray[lower], numArray[upper]);
-			
-			lower = (lower + upper) / 2;
-			
+
+			lower = mid;
+
 		}
+		else
+			return 1;
 
 		if (upper - lower <= 1)
 			break;
-		//printf(" %d ,  %d\n",lower, upper);
+
+		if (k == numArray[upper] || k == numArray[lower])
+			return 1;
+		else
+			return 0;
 	}
 	if (k == numArray[upper] || k == numArray[lower])
 		return 1;
 	else
 		return 0;
+	
 }
 
 
 int main()
 {
 	
-	cin >> length;
+	scanf("%d", &length);
 	
 	numArray = (long long*)malloc(sizeof(long long) * length);
 	for (int i = 0; i < length; i++)
-		scanf("%lld", &numArray[i]);
+		scanf("%lld",&numArray[i]);
 	
 	sort(numArray, numArray + length);
 
@@ -50,16 +63,17 @@ int main()
 
 
 	int length2;
-	cin >> length2;
+	scanf("%d",&length2);
 	int check;
 
 	
 	
 	for (int i = 0; i < length2; i++)
 	{
-		cin >> check;
-		cout<<arrayCheck(check)<<endl;
+		scanf("%d", &check);
+		printf("%d\n",arrayCheck(check));
 	}
+
 	free(numArray);
 	
 }

@@ -1,3 +1,6 @@
+/////////////////////// 1번 풀이 : 이분 탐색 //////////////////
+
+/*
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -37,8 +40,6 @@ int arrayCheck(int k)
 
 		if (k == numArray[upper] || k == numArray[lower])
 			return 1;
-		else
-			return 0;
 	}
 	if (k == numArray[upper] || k == numArray[lower])
 		return 1;
@@ -76,4 +77,31 @@ int main()
 
 	free(numArray);
 	
+}
+*/
+
+//////////////////// 2번 풀이 : set ///////////////////////
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+	int a;
+	cin >> a;
+	set<long long> s;
+	long long k;
+	for (int i = 0; i < a; i++)
+	{
+		scanf("%lld", &k);
+		s.insert(k);
+	}
+	cin >> a;
+	long long check;
+	for (int j = 0; j < a; j++)
+	{
+		scanf("%lld", &check);
+		printf("%d\n", s.count(check)>=1 ? 1 : 0 );
+	}
+
 }

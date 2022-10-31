@@ -1,6 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+int p[1000];
+
+
 
 int main()
 {
@@ -16,7 +19,6 @@ int main()
 
 	int num;
 	cin >> num;
-	int p[1000] = { 0 };
 	int vs = 0;
 	int cnt=0; // 각 부분수열 개수
 	int res = 0; // 최대 수

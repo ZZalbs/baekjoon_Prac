@@ -5,9 +5,9 @@
 //13458
 int main()
 {
-	long long *roomstr,roomnum;
+	long long* roomstr, roomnum;
 	long long mainjudge, subjudge;
-	long long cnt; 
+	long long cnt;
 	scanf("%lld", &roomnum);
 	roomstr = (long long*)malloc(sizeof(long long) * roomnum);
 	for (int i = 0; i < roomnum; i++)
@@ -27,9 +27,9 @@ int main()
 		//	cnt += ((roomstr[i] - mainjudge) + subjudge - 1 ) / subjudge;
 	}
 	printf("%lld", cnt);
-	
+
 	free(roomstr);
-	
+
 }
 
 

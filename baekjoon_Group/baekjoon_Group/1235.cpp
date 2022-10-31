@@ -33,7 +33,7 @@ int main()
 
 	for (int i = 0; i < length; i++)
 	{
-		for (int j = 0; j < num; j++){
+		for (int j = 0; j < num; j++) {
 			check[code[j] % 10]++;
 		}
 		for (int k = 0; k < 9; k++) {

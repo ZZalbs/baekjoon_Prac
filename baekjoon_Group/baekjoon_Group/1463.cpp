@@ -26,8 +26,8 @@ int Calculate(int a)
 
 int main()
 {
-	int num;
-	cin >> num;
-    
-	cout << Calculate(num);
+    int num;
+    cin >> num;
+
+    cout << Calculate(num);
 }

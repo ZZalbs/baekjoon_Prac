@@ -3,42 +3,48 @@ using namespace std;
 
 //나무자르기
 long long* treeArray;
-int length;
+long long length;
 
-int TreeCheck(int k)
+long long TreeCheck(long long target)
 {
-	int upper = length - 1;
-	int lower = 0;
+	long long upper = treeArray[length - 1];
+	long long lower = 0;
+	long long midHeight = 0;
+	long long sum = 0;
+	printf("Target : %d\n\n", target);
 	while (true)
 	{
-		int mid = (lower + upper) / 2;
-		if (k < treeArray[mid]) {
-			upper = mid;
+		midHeight = (lower + upper) / 2;
+		sum = 0;
+		for (long long i = 0; i < length; i++) {
+			if (treeArray[i] > midHeight) {
+				sum += treeArray[i] - midHeight;
+			}
 		}
-		else if (k > treeArray[mid]) {
-			lower = mid;
+		//printf(" lower : %lld\n upper : %lld\n mid : %lld\n sum: %lld\n\n", lower, upper, midHeight, sum);
+		if (sum < target) upper = midHeight; // 합이 필요보다 작음 -> 목표보다 너무 높게 잘랐으므로 위를 낮춤
+		else if (sum > target) {
+			if (upper - lower == 1)
+				break;				
+			lower = midHeight; 
 		}
-		else
-			return 1;
-
-		if (upper - lower <= 1)
-			break;
-
-		if (k == treeArray[upper] || k == treeArray[lower])
-			return 1;
+		else break;
 	}
-	if (k == treeArray[upper] || k == treeArray[lower])
-		return 1;
-	else
-		return 0;
+	return midHeight;
 }
 
-int numCheck(int k)
-{ 
-	
-}
+
 
 int main()
 {
+	long long target;
+	scanf("%lld", &length);
+	scanf("%lld", &target);
 
+	treeArray = (long long*)malloc(sizeof(long long) * length);
+	for (int i = 0; i < length; i++)
+		scanf("%lld", &treeArray[i]);
+
+	sort(treeArray, treeArray + length);
+	printf("%d", TreeCheck(target));
 }

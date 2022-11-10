@@ -11,7 +11,7 @@ long long TreeCheck(long long target)
 	long long lower = 0;
 	long long midHeight = 0;
 	long long sum = 0;
-	printf("Target : %d\n\n", target);
+	//printf("Target : %d\n\n", target);
 	while (true)
 	{
 		midHeight = (lower + upper) / 2;

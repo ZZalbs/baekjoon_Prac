@@ -47,10 +47,10 @@ void PrintDQ()
 long long BirdMove(int k) // 점프길이
 {
     dp[0] = 0;
-    dq.push(make_pair(dp[0],0));
+    dq.push_front(make_pair(dp[0],0));
     for(int i=1;i<n;i++)
     {
-        printDQ;
+        //PrintDQ();
         //인덱스 넘어갔을때
         while(!dq.empty() && (dq.front().second) < i-k ) dq.pop_front();
         if(!dq.empty()){
@@ -62,7 +62,7 @@ long long BirdMove(int k) // 점프길이
         }
         else
             dp[i] = 0;
-        dq.push_back(dp[i],i);
+        dq.push_back(make_pair(dp[i],i));
     }
     return dp[n-1];
 }
@@ -78,11 +78,9 @@ int main()
     cin>>q;
     for(int j=0;j<q;j++){
         memset(dp,-1,sizeof(dp));
-        // deque 초기화
-
-        //
+        dq.clear();
         cin>>bird[j];
-        cout<<BirdMove(bird[j])<<" ";
+        cout<<BirdMove(bird[j])<<"\n";
     }
     
 

@@ -51,14 +51,17 @@ long long BirdMove(int k) // 점프길이
     for(int i=1;i<n;i++)
     {
         //PrintDQ();
+
         //인덱스 넘어갔을때
         while(!dq.empty() && (dq.front().second) < i-k ) dq.pop_front();
         if(!dq.empty()){
             if(dq.front().second < tree[i]) dp[i] = dq.front().first + 1;
             else dp[i] = dq.front().first;
 
-            while(!dq.empty() && dq.back().first > dp[i] ) dq.pop_back(); // dq의 피로값이 더 클때
-            while(!dq.empty() && dq.back().first == dp[i] && tree[dq.back().second] < tree[i] ) dq.pop_back(); // 값은 같은데 지금 삽입되는 나무가 더 클때
+            // dq의 피로값이 더 클때
+            while(!dq.empty() && dq.back().first > dp[i] ) dq.pop_back(); 
+            // 값은 같은데 지금 삽입되는 나무가 더 클때
+            while(!dq.empty() && dq.back().first == dp[i] && tree[dq.back().second] < tree[i] ) dq.pop_back(); 
         }
         else
             dp[i] = 0;

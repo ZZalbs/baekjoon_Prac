@@ -30,15 +30,26 @@ deque <pair<long long, int>> dq; // 피로도, 인덱스 // 나무값 : tree[인
 //이번 이동에 피로도가 없는 대신 다른것보다 값이 1 큼 vs 이번 이동에 피로도가 있는 대신 값이 1 작음
 /*
 이 경우, 어떤 걸 골라도 값이 같다. 
-즉, 이동에 피로도가 드냐 안드냐에 관계없이 현 피로도가 최대한 적기만 하면 문제 x 
-
+즉, 이동에 피로도가 드냐 안드냐에 관계없이 현 피로도가 최대한 적기만 하면 문제 x  
+우선순위를 정하면
+피로도가 1작고, 큰 나무 > 피로도가 1작고, 작은 나무 > 피로도가 1 크고, 큰 나무 > 피로도가 1 크고, 작은 나무
 */
 
 void PrintDQ()
 {
 	for(int i=0;i<dq.size();i++)
 	{
-		cout<<"("<<dq[i].first<<","<<dq[i].second<<")";
+		cout<<"("<<dq[i].first<<","<<dq[i].second<<"<"<<tree[dq[i].second]<<">)";
+	}
+	cout<<"\n";
+}
+
+void PrintDP()
+{
+    cout<<"\n";
+	for(int i=0;i<n;i++)
+	{
+		cout<<dp[i]<<" ";
 	}
 	cout<<"\n";
 }
@@ -50,12 +61,12 @@ long long BirdMove(int k) // 점프길이
     dq.push_front(make_pair(dp[0],0));
     for(int i=1;i<n;i++)
     {
-        PrintDQ();
+        //PrintDQ();
 
         //인덱스 넘어갔을때
         while(!dq.empty() && (dq.front().second) < i-k ) dq.pop_front();
         if(!dq.empty()){
-            if(dq.front().second < tree[i]) dp[i] = dq.front().first + 1;
+            if(tree[dq.front().second] <= tree[i]) dp[i] = dq.front().first + 1;
             else dp[i] = dq.front().first;
 
             // dq의 피로값이 더 클때
@@ -67,6 +78,7 @@ long long BirdMove(int k) // 점프길이
             dp[i] = 0;
         dq.push_back(make_pair(dp[i],i));
     }
+    //PrintDP();
     return dp[n-1];
 }
 

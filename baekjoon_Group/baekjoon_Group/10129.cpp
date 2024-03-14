@@ -50,7 +50,7 @@ long long BirdMove(int k) // 점프길이
     dq.push_front(make_pair(dp[0],0));
     for(int i=1;i<n;i++)
     {
-        //PrintDQ();
+        PrintDQ();
 
         //인덱스 넘어갔을때
         while(!dq.empty() && (dq.front().second) < i-k ) dq.pop_front();

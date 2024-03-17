@@ -25,24 +25,42 @@ long long Square(int left, int right) // 분할정복으로 풀어볼거에요
     int mid = (left+right)/2;
     long long res;
     res=max(Square(left,mid),Square(mid+1,right));
-    
-    while()
+
+    //사각형이 중간을 포함할때
+    int lo = mid, hi = mid+1;
+    long long height = min(hist[lo],hist[hi]);
+    res = max(res, height * 2); // 초기값 : mid, mid+1의 최대사각형
+    while(left < lo || hi < right)
     {
-        
+        if(hi < right && (lo==left || hist[lo-1] < hist[hi+1]))
+        {
+            hi++;
+            height = min(height,hist[hi]);
+        }
+        else // (hi == right || hist[lo-1] > hist[hi+1]) 의 경우
+        {
+            lo--;
+            height = min(height,hist[lo]);
+        }
+        res = max(res, height * (lo-hi+1));
     }
+    return res;
 }
 
 int main()
 {
     fastio;
+    long long imsi;
     while(n!=0)    
     {
         hist.clear();
         cin>>n;
+        if(n==0) break;
         for(int i=0;i<n;i++)
         {
-            cin>>hist[i];
+            cin>>imsi;
+            hist.push_back(imsi);
         }
-        cout<<Square(0,n);
+        cout<<Square(0,n)<<"\n";
     }
 }

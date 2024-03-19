@@ -21,6 +21,7 @@ vector <long long> hist;
 
 long long Square(int left, int right) // 분할정복으로 풀어볼거에요
 {
+    //cout<<"("<<left<<","<<right<<")";
     if(left==right) return hist[left];
     int mid = (left+right)/2;
     long long res;
@@ -37,14 +38,23 @@ long long Square(int left, int right) // 분할정복으로 풀어볼거에요
             hi++;
             height = min(height,hist[hi]);
         }
-        else // (hi == right || hist[lo-1] > hist[hi+1]) 의 경우
+        else // left<lo && (hi == right || hist[lo-1] > hist[hi+1]) 의 경우
         {
             lo--;
             height = min(height,hist[lo]);
         }
-        res = max(res, height * (lo-hi+1));
+        res = max(res, height * (hi-lo+1));
+
+        //cout<<hi<<" "<<lo<<", "<<height <<"*" <<(hi-lo+1)<<"="<<res <<"/ ";
     }
     return res;
+}
+
+void PrintHist()
+{
+    for(int i=0;i<hist.size();i++)
+        cout<<hist[i]<<" ";
+    cout<<"\n";
 }
 
 int main()
@@ -54,6 +64,7 @@ int main()
     while(n!=0)    
     {
         hist.clear();
+        hist.shrink_to_fit();
         cin>>n;
         if(n==0) break;
         for(int i=0;i<n;i++)
@@ -61,6 +72,6 @@ int main()
             cin>>imsi;
             hist.push_back(imsi);
         }
-        cout<<Square(0,n)<<"\n";
+        cout<<Square(0,n-1)<<"\n";
     }
 }

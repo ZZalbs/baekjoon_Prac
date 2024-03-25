@@ -18,7 +18,6 @@ const int INF = 100000001;
 
 int n,w; // 판 넓이, 사건 수
 vector<pair<int,int>> event;
-queue<pair<int,int>> q;
 int dp[MAX][MAX]; // 1번차의 현 사건 , 2번차의 현 사건
 vector<int> record; // 자동차의 사건해결기록. 마지막 정답에 사용
 /*
@@ -43,37 +42,26 @@ int GetDistance(pair<int,int> p,int eventInd)
     return abs(p.first - event[eventInd].first) + abs(p.second - event[eventInd].second);
 }
 
-void Police() // 바텀업이 유리할듯. 현재 메모리 오류 뜨ㅏㅁ. q에 2^w승 개수의 숫자 들어가서 터지나본데?
+int Police(int first, int second) // 탑다운으로 해보죠
 {
+    // 기저사례
+    if(first == w || second == w) return 0;
+
+    //dp
+    int& res = dp[first][second];
+    if(res != -1) return INF;
+
     //메인함수
-
-    for(int i=1;i<w;i++)
-    {   //bfs 이용 탐색할 예정
-        int size_Q = q.size();
-        for(int j=0;j<size_Q;j++){
-            int nowA = q.front().first; // 지금 1번차의 사건인덱스
-            int nowB = q.front().second;// 지금 2번차의 사건인덱스
-            q.pop();
-
+    //dfs ㄱㄱ
+    int maxIndex = max(first,second)+1;
     // 2번차가 갈 때, 1번차는 기존 인덱스를 유지하고 2번차의 사건인덱스만 i로 변화
-            int& fSearch = dp[nowA][i];
-            if(nowA==0) event[nowA] = make_pair(0,0);
-            if(fSearch==-1)
-                fSearch = dp[nowA][nowB] + GetDistance(event[nowA],i);
-            else
-                fSearch = min(fSearch,dp[nowA][nowB] + GetDistance(event[nowA],i));
-            q.push(make_pair(nowA,i));
-
+    int& fSearch = dp[first][maxIndex];
+    fSearch = min(fSearch,Police(first,second+1) + GetDistance(event[first],i));
     // 1번차가 갈 때, 2번차는 기존 인덱스를 유지하고 1번차의 사건인덱스만 i로 변화
-            int& sSearch = dp[i][nowB];
-            if(nowB==0) event[nowB] = make_pair(n,n);
-            if(sSearch==-1)
-                sSearch = dp[nowA][nowB] + GetDistance(event[nowB],i);
-            else
-                sSearch = min(sSearch,dp[nowA][nowB] + GetDistance(event[nowB],i));
-            q.push(make_pair(i,nowB));
-        }
-    }
+    int& sSearch = dp[maxIndex][second];
+    sSearch = min(sSearch,Police(first+1,second) + GetDistance(event[second],i));
+    
+    return min(fSearch,sSearch);
 }
 
 
@@ -89,8 +77,6 @@ int main()
         event.push_back(make_pair(imsiX,imsiY));
     }
     dp[0][0] = 0;
-    
-    q.push(make_pair(0,0));
     Police();
     PrintDP();
 }

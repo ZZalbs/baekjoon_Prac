@@ -38,15 +38,15 @@ void PrintDP()
     }
 }
 
-int GetDistance(int nowInd,int nextInd)
+int GetDistance(int x,int y,int nextInd)
 {
-    return abs(event[nowInd].first - event[nextInd].first) + abs(event[nowInd].second - event[nextInd].second);
+    return abs(x - event[nextInd].first) + abs(y - event[nextInd].second);
 }
 
 int Police(int first, int second) // (A위치, B위치) 탑다운 풀이.
 {
     // 기저사례
-    if(first == w+1 || second == w+1) return 0;
+    if(first == w || second == w) return 0;
 
     //dp
     int& res = dp[first][second];
@@ -56,19 +56,53 @@ int Police(int first, int second) // (A위치, B위치) 탑다운 풀이.
     //dfs ㄱㄱ
     res = INF;
     int maxIndex = max(first,second)+1;
-
+    int fSearch,sSearch;
     // 2번차가 갈 때, 1번차는 기존 인덱스를 유지하고 2번차의 사건인덱스만 i로 변화
     //int& fSearch = dp[first][maxIndex];
-    if(second==0) event[0] = make_pair(n,n);
-        int fSearch = Police(first,maxIndex)+GetDistance(second,maxIndex);
+    if(second==0) fSearch = Police(first,maxIndex)+GetDistance(n,n,maxIndex);
+    else fSearch = Police(first,maxIndex) + GetDistance(event[second].first, event[second].second, maxIndex);
 
     // 1번차가 갈 때, 2번차는 기존 인덱스를 유지하고 1번차의 사건인덱스만 i로 변화
     //int& sSearch = dp[maxIndex][second];
-    if(first==0) event[0] = make_pair(0,0);
-        int sSearch = Police(maxIndex,second) + GetDistance(first,maxIndex);
+    if(first==0) sSearch = Police(maxIndex,second) + GetDistance(1,1,maxIndex);
+    else sSearch = Police(maxIndex,second) + GetDistance(event[first].first, event[first].second,maxIndex);
     
     return res=min(fSearch,sSearch);
 }
+
+void PoliceRoute(int first, int second) // (A위치, B위치) 경로 출력
+{
+    // 기저사례
+    if(first == w || second == w) return;
+
+    //메인함수
+    //dfs ㄱㄱ
+    int maxIndex = max(first,second)+1;
+    int len1,len2; // 1번차가 갈 때, 2번차가 갈 때
+    
+    // 2번차가 갈 때, 1번차는 기존 인덱스를 유지하고 2번차의 사건인덱스만 i로 변화
+    //int& fSearch = dp[first][maxIndex];
+    if(second==0) len2 = GetDistance(n,n,maxIndex);
+    else len2 = GetDistance(event[second].first, event[second].second, maxIndex);
+
+    // 1번차가 갈 때, 2번차는 기존 인덱스를 유지하고 1번차의 사건인덱스만 i로 변화
+    //int& sSearch = dp[maxIndex][second];
+    if(first==0) len1 = GetDistance(1,1,maxIndex);
+    else len1 = GetDistance(event[first].first, event[first].second,maxIndex);
+    
+    if(dp[maxIndex][second] + len1<dp[first][maxIndex] + len2) // 1번차가 갈 때
+    {
+        cout << "1\n";
+        PoliceRoute(maxIndex,second);
+    }
+    else //2번차가 갈 때
+    {
+        cout<<"2\n";
+        PoliceRoute(first,maxIndex);
+    }
+}
+
+
 /*
 void Police() // 바텀업 풀이. dp는 잘 나오지만, 왔던길 체크가 너무 어려워서 기각
 {
@@ -117,6 +151,7 @@ int main()
         event.push_back(make_pair(imsiX,imsiY));
     }
     //q.push(make_pair(0,0));
-    Police(0,0);
-    PrintDP();
+    cout<<Police(0,0)<<"\n";
+    //PrintDP();
+    PoliceRoute(0,0);
 }

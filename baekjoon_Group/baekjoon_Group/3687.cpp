@@ -17,9 +17,9 @@ const int MAX = 101;
 const int INF = 987654321;
 
 int n,imsi;
-int dp[MAX]={0,};// 성냥 i개로 만들 수 있는 최솟값
-int nums[10] = {2,5,5,4,5,6,3,7,6,6}; // 각 숫자를 만드는 성냥개비
-
+long long dp[MAX]={0,};// 성냥 i개로 만들 수 있는 최솟값
+int nums[8] = {INF,INF,1,7,4,2,0,8}; // i개로 만들 수 있는 최소 한자리수
+// 2 : 1 , 3 : 7, 4 : 4, 5 : 2, 6 : 0, 7 : 8
 
 //최대 수 : 짝수면 싹다 1로 채우기, 홀수면 7 한번 넣고 1로 채우기
 void MaximalPrint(int num){
@@ -33,23 +33,22 @@ void MaximalPrint(int num){
         num-=2;
         cout<<'1';
     }
-    cout<<" ";
 }
 //최소 수 : 이건 dp쓰는게 맞을듯
-
-int Minimal(int left){
-    //기저사례
-    if(left<=0) return 0;
-
-    //dp
-    int& res = dp[left];
-    if(res!=-1) return res;
-
-    res=INF;
-    //메인함수
-    for(int i=0;i<10;i++)
-        res = min(res,Minimal(left-nums[i])+dp[left-nums[i]]*10);
-    return res;
+long long Minimal(int left){
+    for(int i=0;i<8;i++)
+        dp[i] = nums[i];
+    dp[6] = 6; // 숫자는 0으로 시작 불가
+    for(int i=8;i<=left;i++)
+    {   
+        for(int j=2;j<8;j++)
+        {
+            if(dp[i]==-1) dp[i] = dp[i-j]*10 + nums[j]; 
+            else dp[i] = min(dp[i],dp[i-j]*10 + nums[j]);
+        }
+    }
+    
+    return dp[left];
 }
 
 int main()
@@ -62,5 +61,6 @@ int main()
         cin>>imsi;
         cout<<Minimal(imsi)<<" ";
         MaximalPrint(imsi);
+        cout<<"\n";
     }
 }

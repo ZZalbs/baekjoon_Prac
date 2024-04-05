@@ -20,14 +20,20 @@ vector<vector<int>> graph; // 그래프
 vector<bool> visited;
 int dp[MAX];
 int n;
+queue <int> q;
 
+//위상정렬 방법
+/*
+1. 큐에 진입차수(나한테 오는 간선) 0인 정점 집어넣기
+2. 1에서 나온 정점의 간선 다 없애기
+3. 1로 돌아가기
+*/
 
-void DFS(int here)
+void TSort() // 위상정렬. 미완성
 {
-    visited[here]=true;
-    for(int i=0;i<graph.size();i++)
+    for(int i=1;i<=n;i++)
     {
-        if(!visited[i]) DFS(graph[here][i]);
+
     }
 }
 
@@ -52,15 +58,21 @@ int main()
     graph = vector<vector<int>>(n+1,vector<int>(n+1,0));
     memset(dp,-1,sizeof(dp));
     int value,need;
+    bool haveLine; // 간선이 없는지 있는지 확인
     for(int i=1;i<=n;i++)
     {
         value=0;
         need=0;
+        haveLine=false; 
         cin>>value;
         while(need!=-1)
         {
             cin>>need;
-            if(need==-1) break;
+            if(need==-1) {
+                if(!haveLine) q.push();
+                break;
+            }
+            haveline=true;
             graph[need][i] = value; 
         }
     }

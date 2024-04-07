@@ -17,7 +17,8 @@ const int MAX = 501;
 const int INF = 987654321;
 
 vector<vector<int>> graph; // 그래프
-vector<bool> visited;
+int buildTime[MAX];
+int haveline[MAX]; // haveline[i] = k 일때, k = i번째 건물이 요구로 하는 건물수
 int dp[MAX];
 int n;
 queue <int> q;
@@ -33,23 +34,36 @@ void TSort() // 위상정렬. 미완성
 {
     for(int i=1;i<=n;i++)
     {
-
+        if(haveline[i]==0) q.push(i);
+        dp[i] = buildTime[i];
     }
-}
 
-void PrintGraph()
-{
-    cout<<"\n";
+    //사이클이 없는 입력이므로, 사이클 예외처리는 생략
+
     for(int i=1;i<=n;i++)
     {
-        for(int j=1;j<=n;j++)
+        int cur = q.front(); // cur : 삭제한 정점(진입차수가 0)
+        q.pop();
+        for(int i=0;i<graph[cur].size();i++)
         {
-            cout<<graph[i][j];
-        }
-        cout<<"\n";
-    }
+            int next=graph[cur][i]; // next : cur을 짓고 다음에 짓는 건물
+            haveline[next]--; // cur과 연결된 간선 삭제
 
+            dp[next] = max(dp[next], dp[cur]+buildTime[next]);
+            if(haveline[next]==0) q.push(next);    // next가 진입차수가 0이면
+        }
+    }
 }
+
+void PrintDP()
+{
+    //cout<<"\n";
+    for(int i=1;i<=n;i++)
+    {
+        cout<<dp[i]<<"\n";
+    }
+}
+
 
 int main()
 {
@@ -57,24 +71,23 @@ int main()
     cin>>n;
     graph = vector<vector<int>>(n+1,vector<int>(n+1,0));
     memset(dp,-1,sizeof(dp));
-    int value,need;
+    memset(haveline,0,sizeof(haveline));
+    int need;
     bool haveLine; // 간선이 없는지 있는지 확인
     for(int i=1;i<=n;i++)
     {
-        value=0;
+        
         need=0;
-        haveLine=false; 
-        cin>>value;
+        cin>>buildTime[i];
         while(need!=-1)
         {
             cin>>need;
-            if(need==-1) {
-                if(!haveLine) q.push();
+            if(need==-1) 
                 break;
-            }
-            haveline=true;
-            graph[need][i] = value; 
+            graph[need].push_back(i);
+            haveline[i]++;
         }
     }
-    PrintGraph();
+    TSort();
+    PrintDP();
 }

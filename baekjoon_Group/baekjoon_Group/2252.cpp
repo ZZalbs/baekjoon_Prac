@@ -24,7 +24,7 @@ void PrintGraph()
     cout<<"\n";
     for(int i=1;i<=n;i++)
     {   
-        for(int j=1;j<=n;j++){
+        for(int j=1;j<=graph[i].size();j++){
             cout<<graph[i][j]<<" ";
         }
         cout<<"\n";

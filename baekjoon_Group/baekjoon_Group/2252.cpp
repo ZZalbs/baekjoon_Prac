@@ -32,19 +32,35 @@ void PrintGraph()
     }
 }
 
+void PrintNodeCount()
+{
+    cout<<"\n";
+    for(int i=1;i<=n;i++)
+    {   
+        cout<<nodeCount[i]<<" ";
+    }
+}
+
 void TopologicalSort()
 {
     for(int i=1;i<=n;i++)
     {
         if(nodeCount[i]==0) q.push(i);
     }
-    int curNode = q.front();
+    
     
     while(!q.empty())
     {
+        int curNode = q.front();
         q.pop();
         cout<<curNode<<" ";
-
+        for(int i=0;i<graph[curNode].size();i++)
+        {
+            int linkedNodeWithCurNode = graph[curNode][i];
+            nodeCount[linkedNodeWithCurNode]--;
+            if(nodeCount[linkedNodeWithCurNode] == 0)
+                q.push(linkedNodeWithCurNode); 
+        }
     }
 }
 
@@ -55,10 +71,11 @@ int main()
     memset(nodeCount,0,sizeof(nodeCount));
     cin>>n>>m;
     graph.assign(n+1, vector<int>(0,0));
-    for(int i=0;i<n;i++) // a가 b의 앞이다, 즉 a->b
+    for(int i=0;i<m;i++) // a가 b의 앞이다, 즉 a->b
     {
         cin>>a>>b;
         graph[a].push_back(b);
-        nodeCount[a]++;
+        nodeCount[b]++;
     }
+    TopologicalSort();
 }

@@ -15,8 +15,6 @@ using namespace std;
 
 const int arrayLimit = 100002;
 
-// 현재 1번 테케  0 / 0 나옴. 내일 다시 해보자
-
 int testCaseCount,buildingCount,buildRulesCount;
 int timeForEachBuilding[arrayLimit];
 int preBuildNum,laterBuildNum;
@@ -46,15 +44,19 @@ void InputTestCaseAndSetBuildRules()
     {
         cin>>preBuildNum>>laterBuildNum;
         buildRules[preBuildNum].push_back(laterBuildNum);
-        nodeCount[preBuildNum]++;
+        nodeCount[laterBuildNum]++;
     }
     cin>>finalBuildNum;
 }
 void TopologicalSort() // 위상 정렬
 {
     for(int i=1;i<=buildingCount;i++)
-        if(nodeCount[i] == 0) queueForBFS.push(i);
-    
+        if(nodeCount[i] == 0) 
+        {
+            queueForBFS.push(i);
+            timeForFullBuilding[i] = timeForEachBuilding[i]; 
+        }
+
     while(!queueForBFS.empty())
     {
         int nowNode = queueForBFS.front();
@@ -75,10 +77,27 @@ void PrintResult()
     cout<<timeForFullBuilding[finalBuildNum]<<"\n";
 }
 
+void PrintTimeForFullBuilding()
+{
+    for(int i=1;i<=buildingCount;i++)
+        cout<<timeForFullBuilding[i]<<" "; // 임시로 each로 바꿈
+    cout<<"\n";
+}
+
+void PrintBuildRules()
+{
+    for(int i=1;i<=buildingCount;i++)
+    {
+        cout<<i<<"->";
+        for(int j=0;j<buildRules[i].size();j++)
+            cout<<buildRules[i][j]<<" ";
+        cout<<"\n";
+    }
+}
+
 int main()
 {
     fastio;
-    memset(timeForEachBuilding,0,sizeof(timeForEachBuilding));
     cin>>testCaseCount;
     for(int i=0;i<testCaseCount;i++)
     {

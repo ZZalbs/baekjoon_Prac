@@ -20,11 +20,48 @@ vector<vector<int>> performRules;
 int frontSingerNum, backSingerNum;
 int singerCountPerPD;
 int headNodeCount[arrayLimit];
-
+queue <int> queueForBFS;
+vector<int> singerFinalOrder;
+bool visited[arrayLimit]={false,};
 
 void TopologicalSort()
 {
+    for(int i=1;i<=singerCount;i++)
+    {
+        if(headNodeCount[i] == 0 ) queueForBFS.push(i);
+    }
+
+    for(int i=1;i<=singerCount;i++)
+    {
+        if(queueForBFS.empty()) 
+        {
+            singerFinalOrder.clear();
+            singerFinalOrder.push_back(0);
+            return;
+        }
+
+        int nowSingerNum = queueForBFS.front();
     
+        if(visited[nowSingerNum]) continue;
+        visited[nowSingerNum]=true;    
+
+        singerFinalOrder.push_back(nowSingerNum);
+        queueForBFS.pop();
+        for(int j=0;j<performRules[nowSingerNum].size();j++)
+        {
+            int linkedSinger = performRules[nowSingerNum][j];
+            headNodeCount[linkedSinger]--;
+            if(headNodeCount[linkedSinger]==0) queueForBFS.push(linkedSinger);
+        }
+    }
+}
+
+void PrintSingerOrder()
+{
+    for(int i=0;i<singerFinalOrder.size();i++)
+    {
+        cout<<singerFinalOrder[i]<<"\n";
+    }
 }
 
 int main()
@@ -48,4 +85,5 @@ int main()
         }
     }
     TopologicalSort();
+    PrintSingerOrder();
 }

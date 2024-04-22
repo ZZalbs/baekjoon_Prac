@@ -27,6 +27,9 @@ int headNodeCount[arrayLimit];
 int icValue[arrayLimit];
 vector<int> restaurant;
 
+
+
+
 int main()
 {
     fastio;

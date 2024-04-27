@@ -27,18 +27,52 @@ using namespace std;
 
 const int arrayLimit = 10002;
 stack<int> stackForSccFind;
-bool isDfsFinishedOnThisNode[arrayLimit];
 int parentNodeNum[arrayLimit];
+bool isBelongedToScc[arrayLimit];
 vector<vector<int>> scc;
 vector<vector<int>> graphForScc;
 int nodeCount,lineCount;
 
+int MakeSccByTarzan(int nowNode)
+{   
+    parentNodeNum[nowNode] = nowNode;
+    stackForSccFind.push(nowNode);
+    int parent = nowNode;
 
+    for(int i=0;i<graphForScc[nowNode].size();i++){
+        int nextNode = graphForScc[nowNode][i];
+
+        //min을 쓰는 이유
+        // -> DFS를 가장 낮은 정점부터 시작하기 때문에, 가장 차수 높은 부모는 낮은 숫자에 있기때문
+        if(parentNodeNum[nextNode]==0) //방문 x 정점의 경우
+            parent = min(parent,MakeSccByTarzan(nextNode)); 
+        else if(!isBelongedToScc[nextNode]) // 방문했지만 scc에 속하지 않은 정점
+            parent = min(parent,parentNodeNum[nextNode]); 
+    }
+
+    if(parent == nowNode)
+    {
+        vector<int> sccArray;
+        while(1)
+        {    
+            int sccPieceNum = stackForSccFind.top();
+            sccArray.push_back(sccPieceNum);
+            isBelongedToScc[sccPieceNum] = true; 
+            stackForSccFind.pop();
+            if(sccPieceNum == nowNode) break;
+        }
+        sort(sccArray.begin(),sccArray.end());
+        scc.push_back(sccArray);
+    }
+    
+    return parent;
+}
 
 int main()
 {
     fastio;
     memset(parentNodeNum,0,sizeof(parentNodeNum));
+    memset(isBelongedToScc,false,sizeof(isBelongedToScc));
     graphForScc.assign(arrayLimit,vector<int>(0,0));
     cin>>nodeCount>>lineCount;
     for(int i=0;i<lineCount;i++)
@@ -46,5 +80,21 @@ int main()
         int lineStartNode,lineEndNode;
         cin>>lineStartNode>>lineEndNode;
         graphForScc[lineStartNode].push_back(lineEndNode);
+    }
+
+    for(int i=1;i<=nodeCount;i++)
+    {
+        if(parentNodeNum[i]==0)
+            MakeSccByTarzan(i);
+    }
+    
+    cout<<scc.size()<<"\n";
+    for(int i=0;i<scc.size();i++)
+    {
+        for(int j=0;j<scc[i].size();j++)
+        {
+            cout<<scc[i][j]<<" ";
+        }
+        cout<<"-1\n";
     }
 }

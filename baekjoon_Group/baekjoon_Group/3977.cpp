@@ -32,16 +32,82 @@ using namespace std;
 각 테스트 케이스의 끝에는 하나의 빈 줄을 출력한다.
 */
 
+//고민노트
+
+/*
+일단 다 scc로 묶은 다음에, 들어오는 간선 없는 scc를 찾아서 그 scc만 출력하면 될것같은데
+그럼 들어오는 간선수 다 재놓고, scc 돌리면서 판단하면 되겠네
+-> 대신, 들어오는 간선 없는 scc가 2개 이상이면 무조건 confused 떠야함. 
+*/
+
+const int ARRAYLIMIT = 100002;
+
+int testcaseCount;
 int areaCount,moveCount;
 vector<vector<int>> moveSet;
+vector<vector<int>> scc;
+
+
+stack<int> stackForScc;
+bool isDfsFinished[ARRAYLIMIT];
+int nodeId[ARRAYLIMIT];
+int idUnused;
+
+int headNodeCount[ARRAYLIMIT];
+
 
 
 int FindSccByTarzan(int nowNode)
 {
-    
+    nodeID[nowNode]=++idUnused;
+    int parentNode = nodeId[nowNode];
+    stackForScc.push(nowNode);
+
+    for(int i=0;i<moveSet[nowNode].size();i++)
+    {
+        int nextNode = moveSet[nowNode][i];
+        if(nodeId[nextNode] == 0) 
+            parentNode = min(parentNode,FindSccByTarzan(nextNode));
+        else if(!isDfsFinished[nextNode])
+            parentNode = min(parentNode,nodeId[nextNode]);
+    }
+
+    if(parentNode == nodeId[nowNode])
+    {
+        vector<int> sccRow;
+        while(1)
+        {
+            int sccPiece = stackForScc.top();
+            sccRow.push_back(sccPiece);
+            isDfsFinished[sccPiece]=true;
+            sccPiece.pop();
+            if(sccPiece==nowNode) break;
+        }
+        // scc를 다 뺐는데도 스택이 비지 않았다면, 해당 scc는 차수가 0이 아님을 이용. 내일 다시풀것
+        scc.push_back(sccRow);
+    }
 }
 
 int main()
 {
+    fastio;
+    moveSet.assign(ARRAYLIMIT,vector<int>(0,0));
+    memset(headNodeCount,0,sizeof(headNodeCount));
 
+    memset(nodeId,0,sizeof(nodeId));
+    memset(isDfsFinished,false,sizeof(isDfsFinished));
+    idUnused = 1;
+
+    cin>>testcaseCount;
+    for(int t=0;t<testcaseCount;t++)
+    {
+        cin>>areaCount>>moveCount;
+        for(int i=0;i<moveCount;i++)
+        {
+            int moveStartPos, moveEndPos;
+            cin>>moveStartPos>>moveEndPos;
+            moveSet[moveStartPos].push_back(moveEndPos);
+            headNodeCount[moveEndPos]++;
+        }
+    }
 }

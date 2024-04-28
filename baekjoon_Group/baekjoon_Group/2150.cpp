@@ -27,37 +27,38 @@ using namespace std;
 
 const int arrayLimit = 10002;
 stack<int> stackForSccFind;
-int parentNodeNum[arrayLimit];
-bool isBelongedToScc[arrayLimit];
+int nodeIdForGrouping[arrayLimit]; // 임의로 지정한 노드의 id. scc 탐색간 방문여부 판단 및 그룹핑에 사용
+bool isDfsFinished[arrayLimit];
 vector<vector<int>> scc;
 vector<vector<int>> graphForScc;
 int nodeCount,lineCount;
+int idUnused;
 
 int MakeSccByTarzan(int nowNode)
 {   
-    parentNodeNum[nowNode] = nowNode;
+    nodeIdForGrouping[nowNode] = ++idUnused;
     stackForSccFind.push(nowNode);
-    int parent = nowNode;
+    int parent = nodeIdForGrouping[nowNode];
 
     for(int i=0;i<graphForScc[nowNode].size();i++){
         int nextNode = graphForScc[nowNode][i];
 
         //min을 쓰는 이유
         // -> DFS를 가장 낮은 정점부터 시작하기 때문에, 가장 차수 높은 부모는 낮은 숫자에 있기때문
-        if(parentNodeNum[nextNode]==0) //방문 x 정점의 경우
+        if(nodeIdForGrouping[nextNode]==0) //방문 x 정점의 경우
             parent = min(parent,MakeSccByTarzan(nextNode)); 
-        else if(!isBelongedToScc[nextNode]) // 방문했지만 scc에 속하지 않은 정점
-            parent = min(parent,parentNodeNum[nextNode]); 
+        else if(!isDfsFinished[nextNode]) // 방문했지만 dfs가 안끝난 정점
+            parent = min(parent,nodeIdForGrouping[nextNode]); 
     }
 
-    if(parent == nowNode)
+    if(parent == nodeIdForGrouping[nowNode]) 
     {
         vector<int> sccArray;
         while(1)
         {    
             int sccPieceNum = stackForSccFind.top();
             sccArray.push_back(sccPieceNum);
-            isBelongedToScc[sccPieceNum] = true; 
+            isDfsFinished[sccPieceNum] = true; 
             stackForSccFind.pop();
             if(sccPieceNum == nowNode) break;
         }
@@ -68,11 +69,17 @@ int MakeSccByTarzan(int nowNode)
     return parent;
 }
 
+bool CompSccArray(vector<int>& vecA,vector<int>& vecB)
+{
+    return vecA[0]<vecB[0];
+}
+
 int main()
 {
     fastio;
-    memset(parentNodeNum,0,sizeof(parentNodeNum));
-    memset(isBelongedToScc,false,sizeof(isBelongedToScc));
+    idUnused=1;
+    memset(nodeIdForGrouping,0,sizeof(nodeIdForGrouping));
+    memset(isDfsFinished,false,sizeof(isDfsFinished));
     graphForScc.assign(arrayLimit,vector<int>(0,0));
     cin>>nodeCount>>lineCount;
     for(int i=0;i<lineCount;i++)
@@ -84,10 +91,12 @@ int main()
 
     for(int i=1;i<=nodeCount;i++)
     {
-        if(parentNodeNum[i]==0)
+        if(nodeIdForGrouping[i]==0)
             MakeSccByTarzan(i);
     }
     
+    sort(scc.begin(),scc.end(),CompSccArray);
+
     cout<<scc.size()<<"\n";
     for(int i=0;i<scc.size();i++)
     {

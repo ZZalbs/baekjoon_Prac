@@ -32,12 +32,11 @@ using namespace std;
 각 테스트 케이스의 끝에는 하나의 빈 줄을 출력한다.
 */
 
-//고민노트
-
+//풀이 후기
 /*
-일단 다 scc로 묶은 다음에, 차수 0인 scc가 1개 있는지 찾기.
--> 대신, 들어오는 간선 없는 scc가 2개 이상이면 무조건 confused 떠야함. 
+간선을 보고 scc의 차수가 몇인지 찾는 함수 -> 해당 부분 구현에서 문제 생겨서 오래걸림. 다시 연습하기
 */
+
 
 const int ARRAYLIMIT = 100002;
 
@@ -50,11 +49,14 @@ vector<vector<int>> scc;
 stack<int> stackForScc;
 bool isDfsFinished[ARRAYLIMIT];
 int nodeId[ARRAYLIMIT];
+int groupId[ARRAYLIMIT];
 int idUnused;
 
+int sccIndegree[ARRAYLIMIT];
 int sccZeroIndegreeCount;
+vector<int> result;
 
-
+int imsiNum;
 
 int FindSccByTarzan(int nowNode)
 {
@@ -65,7 +67,7 @@ int FindSccByTarzan(int nowNode)
     for(int i=0;i<moveSet[nowNode].size();i++)
     {
         int nextNode = moveSet[nowNode][i];
-        if(nodeId[nextNode] == 0) 
+        if(nodeId[nextNode] == -1) 
             parentNode = min(parentNode,FindSccByTarzan(nextNode));
         else if(!isDfsFinished[nextNode])
             parentNode = min(parentNode,nodeId[nextNode]);
@@ -79,9 +81,12 @@ int FindSccByTarzan(int nowNode)
             int sccPiece = stackForScc.top();
             sccRow.push_back(sccPiece);
             isDfsFinished[sccPiece]=true;
+            groupId[sccPiece] = imsiNum;
             stackForScc.pop();
             if(sccPiece==nowNode) break;
         }
+        sort(sccRow.begin(),sccRow.end());
+        imsiNum++;
         scc.push_back(sccRow);
     }
 
@@ -93,12 +98,84 @@ void Initialize()
     moveSet.clear();
     moveSet.assign(ARRAYLIMIT,vector<int>(0,0));
 
-    memset(nodeId,0,sizeof(nodeId));
+    memset(nodeId,-1,sizeof(nodeId));
     memset(isDfsFinished,false,sizeof(isDfsFinished));
     idUnused = 1;
-
+    
     scc.clear();
+    memset(groupId,0,sizeof(groupId));
+    memset(sccIndegree,0,sizeof(sccIndegree));
     sccZeroIndegreeCount=0;
+    imsiNum=0;
+
+    result.clear();
+}
+
+void CheckIndegreeZeroScc()
+{
+    for(int i=0;i<areaCount;i++)
+    {
+        for(int j=0;j<moveSet[i].size();j++)
+        {
+            int line = moveSet[i][j];
+            if(groupId[i]!=groupId[line])
+            {
+                sccIndegree[groupId[line]]++;
+            }
+        }
+    }
+}
+
+void MakeResult()
+{
+    for(int i=0;i<scc.size();i++)
+    {
+        if(sccIndegree[i] ==0  )
+        {
+            sccZeroIndegreeCount++;
+            for(int j=0;j<scc[i].size();j++)
+                result.push_back(scc[i][j]);
+        }
+    }
+}
+
+void CheckMoveSet()
+{
+    for(int i=0;i<areaCount;i++)
+    {
+            for(int j=0;j<moveSet[i].size();j++)
+            {
+                cout<<moveSet[i][j]<<" ";
+            }
+            cout<<"\n";
+    }
+}
+
+void CheckGroupId()
+{
+    for(int i=0;i<areaCount;i++)
+    {
+        cout<<groupId[i]<<" ";
+    }
+    cout<<"\n";
+}
+
+void CheckZIC()
+{
+    for(int i=0;i<scc.size();i++)
+        cout<<sccIndegree[i]<<" ";
+    cout<<"->"<<sccZeroIndegreeCount<<"\n";
+}
+
+void CheckScc()
+{
+    cout<<"\nscc: \n";
+    for(int i=0;i<scc.size();i++){
+        for(int j=0;j<scc[i].size();j++)  
+            cout<<scc[i][j]<<" ";
+        cout<<"\n";
+    }
+    cout<<"\n";
 }
 
 int main()
@@ -118,16 +195,22 @@ int main()
         }
         
         for(int i=0;i<areaCount;i++)
-            FindSccByTarzan(i);
+            if(nodeId[i]==-1) FindSccByTarzan(i);
         
     // https://dbstndi6316.tistory.com/86 참고해서 수정하기
 
-        if()
-            cout<<"confused\n\n";
+        CheckIndegreeZeroScc();
+        MakeResult();
+        //CheckMoveSet();
+        //CheckGroupId();
+        //CheckZIC();
+        //CheckScc();
+        if(sccZeroIndegreeCount!=1)
+            cout<<"Confused\n\n";
         else{
-            for(int i=0;i<scc[0].size();i++)
+            for(int i=0;i<result.size();i++)
             {
-                cout<<scc[0][i]<<"\n";
+                cout<<result[i]<<"\n";
             }
             cout<<"\n";
         }

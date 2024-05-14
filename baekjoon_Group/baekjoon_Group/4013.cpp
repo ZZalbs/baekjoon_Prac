@@ -25,11 +25,11 @@ int startIcNum, restaurantCount;
 vector<vector<int>> road;
 int headNodeCount[ARRAYLIMIT];
 int icValue[ARRAYLIMIT];
-vector<int> restaurant;
+bool isRestaurant[ARRAYLIMIT];
 
 stack<int> stackForScc;
 vector<vector<int>> scc;
-vector<int> sccRow;
+
 int nodeGroupIdSet[ARRAYLIMIT];
 int nowGroupId;
 bool isDfsFinished[ARRAYLIMIT];
@@ -52,6 +52,7 @@ int FindSccWithTarzan(int nowNode)
 
     if(parentNode == nodeGroupIdSet[nowNode])
     {
+        vector<int> sccRow;
         while(true)
         {
             int targetNode = stackForScc.top();
@@ -75,13 +76,14 @@ void Initialize()
     road.assign(ARRAYLIMIT,vector<int>(0,0));
     memset(nodeGroupIdSet,0,sizeof(nodeGroupIdSet));
     memset(isDfsFinished,false,sizeof(isDfsFinished));
+    memset(isRestaurant,false,sizeof(isRestaurant));
     nowGroupId=0;
 }
 
 void GetInput()
 {
     cin>>icCount>>roadCount;
-    for(int i=0;i<roadCount;i++)
+    for(int i=1;i<=roadCount;i++)
     {
         cin>>icHead>>icTail;
         road[icHead].push_back(icTail);
@@ -94,9 +96,27 @@ void GetInput()
     for(int i=1;i<=restaurantCount;i++){
         int imsiRestaurant;
         cin>>imsiRestaurant;
-        restaurant.push_back(imsiRestaurant);
+        isRestaurant[imsiRestaurant]=true;
     }
 }
+
+void Printinput()
+{
+    cout<<icCount<<roadCount<<"\n";
+    for(int i=1;i<=icCount;i++)
+    {
+        cout<<i<<" ->";
+        for(int j=0;j<road[i].size();j++)
+            cout<<road[i][j]<<" ";
+        cout<<"\n";
+    }
+    for(int i=1;i<=icCount;i++)
+       cout<<icValue[i]<<" ";
+    cout<<"\n";
+
+    cout<<startIcNum<<restaurantCount;
+}
+
 
 void PrintScc()
 {
@@ -113,11 +133,12 @@ int main()
 {
     Initialize();
     GetInput();
-    
+    Printinput();
     for(int i=1;i<=icCount;i++)
     {
-        if(nodeGroupIdSet[i] != 0 )
+        if(nodeGroupIdSet[i] == 0 )
             FindSccWithTarzan(i);
+        
     }
 
     PrintScc();

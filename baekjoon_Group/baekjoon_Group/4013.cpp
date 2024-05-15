@@ -25,13 +25,16 @@ int startIcNum, restaurantCount;
 vector<vector<int>> road;
 int headNodeCount[ARRAYLIMIT];
 int icValue[ARRAYLIMIT];
-bool isRestaurant[ARRAYLIMIT];
+bool isRestaurantInRoad[ARRAYLIMIT];
+bool isRestaurantInSccGraph[ARRAYLIMIT];
 
 stack<int> stackForScc;
 vector<vector<int>> scc;
+vector<vector<int>> sccGraph;
 
 int nodeGroupIdSet[ARRAYLIMIT];
 int nowGroupId;
+int sccId[ARRAYLIMIT];
 bool isDfsFinished[ARRAYLIMIT];
 
 
@@ -58,15 +61,43 @@ int FindSccWithTarzan(int nowNode)
             int targetNode = stackForScc.top();
             isDfsFinished[targetNode] = true;
             sccRow.push_back(targetNode);
+            sccId[targetNode] = scc.size()+1;
             stackForScc.pop();
             if(targetNode == nowNode) break;
         }
         sort(sccRow.begin(),sccRow.end());
         scc.push_back(sccRow);
     }
-
     return parentNode;
 }
+
+void MakeNewGraphByScc()
+{
+    for(int i=1;i<=icCount;i++)
+    {
+        for(int j=0;j<road[i].size();j++)
+        {
+            int targetNodeInRoad = road[i][j]; 
+            if(sccId[i] == sccId[targetNodeInRoad]) continue;
+            sccGraph[sccId[i]].push_back(sccId[targetNodeInRoad]);
+        }
+    }
+}
+
+void PrintNewGraphByScc()
+{
+    cout<<"\n<newGraph>\n";
+    for(int i=1;i<=scc.size();i++)
+    {
+        cout<<i<<" : ";
+        for(int j=0;j<sccGraph[i].size();j++)
+        {
+            cout<<sccGraph[i][j]<<" ";
+        }
+        cout<<"\n";
+    }
+}
+
 
 void Initialize()
 {
@@ -74,9 +105,12 @@ void Initialize()
     memset(headNodeCount,0,sizeof(headNodeCount));
     memset(icValue,0,sizeof(icValue));
     road.assign(ARRAYLIMIT,vector<int>(0,0));
+    sccGraph.assign(ARRAYLIMIT,vector<int>(0,0));
     memset(nodeGroupIdSet,0,sizeof(nodeGroupIdSet));
+    memset(sccId,-1,sizeof(sccId));
     memset(isDfsFinished,false,sizeof(isDfsFinished));
-    memset(isRestaurant,false,sizeof(isRestaurant));
+    memset(isRestaurantInRoad,false,sizeof(isRestaurantInRoad));
+    memset(isRestaurantInSccGraph,false,sizeof(isRestaurantInSccGraph));
     nowGroupId=0;
 }
 
@@ -96,7 +130,7 @@ void GetInput()
     for(int i=1;i<=restaurantCount;i++){
         int imsiRestaurant;
         cin>>imsiRestaurant;
-        isRestaurant[imsiRestaurant]=true;
+        isRestaurantInRoad[imsiRestaurant]=true;
     }
 }
 
@@ -120,7 +154,7 @@ void Printinput()
 
 void PrintScc()
 {
-    cout<<"\n";
+    cout<<"\n<scc>\n";
     for(int i=0;i<scc.size();i++)
     {
         for(int j=0;j<scc[i].size();j++)
@@ -133,14 +167,14 @@ int main()
 {
     Initialize();
     GetInput();
-    Printinput();
     for(int i=1;i<=icCount;i++)
     {
         if(nodeGroupIdSet[i] == 0 )
             FindSccWithTarzan(i);
-        
     }
 
     PrintScc();
+    MakeNewGraphByScc();
+    PrintNewGraphByScc();
     
 }

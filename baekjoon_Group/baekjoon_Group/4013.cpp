@@ -38,66 +38,6 @@ int sccId[ARRAYLIMIT];
 bool isDfsFinished[ARRAYLIMIT];
 
 
-int FindSccWithTarzan(int nowNode)
-{
-    nodeGroupIdSet[nowNode]=++nowGroupId;
-    int parentNode = nodeGroupIdSet[nowNode];
-    stackForScc.push(nowNode);
-    
-    for(int i=0;i<road[nowNode].size();i++)
-    {
-        int nextNode = road[nowNode][i];
-        if(nodeGroupIdSet[nextNode] == 0)
-            parentNode = min(parentNode,FindSccWithTarzan(nextNode));
-        else if(!isDfsFinished[nextNode])
-            parentNode = min(parentNode,nodeGroupIdSet[nextNode]);
-    }
-
-    if(parentNode == nodeGroupIdSet[nowNode])
-    {
-        vector<int> sccRow;
-        while(true)
-        {
-            int targetNode = stackForScc.top();
-            isDfsFinished[targetNode] = true;
-            sccRow.push_back(targetNode);
-            sccId[targetNode] = scc.size()+1;
-            stackForScc.pop();
-            if(targetNode == nowNode) break;
-        }
-        sort(sccRow.begin(),sccRow.end());
-        scc.push_back(sccRow);
-    }
-    return parentNode;
-}
-
-void MakeNewGraphByScc()
-{
-    for(int i=1;i<=icCount;i++)
-    {
-        for(int j=0;j<road[i].size();j++)
-        {
-            int targetNodeInRoad = road[i][j]; 
-            if(sccId[i] == sccId[targetNodeInRoad]) continue;
-            sccGraph[sccId[i]].push_back(sccId[targetNodeInRoad]);
-        }
-    }
-}
-
-void PrintNewGraphByScc()
-{
-    cout<<"\n<newGraph>\n";
-    for(int i=1;i<=scc.size();i++)
-    {
-        cout<<i<<" : ";
-        for(int j=0;j<sccGraph[i].size();j++)
-        {
-            cout<<sccGraph[i][j]<<" ";
-        }
-        cout<<"\n";
-    }
-}
-
 
 void Initialize()
 {
@@ -113,6 +53,7 @@ void Initialize()
     memset(isRestaurantInSccGraph,false,sizeof(isRestaurantInSccGraph));
     nowGroupId=0;
 }
+
 
 void GetInput()
 {
@@ -151,6 +92,38 @@ void Printinput()
     cout<<startIcNum<<restaurantCount;
 }
 
+int FindSccWithTarzan(int nowNode)
+{
+    nodeGroupIdSet[nowNode]=++nowGroupId;
+    int parentNode = nodeGroupIdSet[nowNode];
+    stackForScc.push(nowNode);
+    
+    for(int i=0;i<road[nowNode].size();i++)
+    {
+        int nextNode = road[nowNode][i];
+        if(nodeGroupIdSet[nextNode] == 0)
+            parentNode = min(parentNode,FindSccWithTarzan(nextNode));
+        else if(!isDfsFinished[nextNode])
+            parentNode = min(parentNode,nodeGroupIdSet[nextNode]);
+    }
+
+    if(parentNode == nodeGroupIdSet[nowNode])
+    {
+        vector<int> sccRow;
+        while(true)
+        {
+            int targetNode = stackForScc.top();
+            isDfsFinished[targetNode] = true;
+            sccRow.push_back(targetNode);
+            sccId[targetNode] = scc.size()+1;
+            stackForScc.pop();
+            if(targetNode == nowNode) break;
+        }
+        sort(sccRow.begin(),sccRow.end());
+        scc.push_back(sccRow);
+    }
+    return parentNode;
+}
 
 void PrintScc()
 {
@@ -161,6 +134,40 @@ void PrintScc()
             cout<<scc[i][j]<<" ";
         cout<<"\n";
     }
+}
+
+
+void MakeNewGraphByScc()
+{
+    for(int i=1;i<=icCount;i++)
+    {
+        for(int j=0;j<road[i].size();j++)
+        {
+            int targetNodeInRoad = road[i][j]; 
+            if(sccId[i] == sccId[targetNodeInRoad]) continue;
+            sccGraph[sccId[i]].push_back(sccId[targetNodeInRoad]);
+        }
+    }
+}
+
+void PrintNewGraphByScc()
+{
+    cout<<"\n<newGraph>\n";
+    for(int i=1;i<=scc.size();i++)
+    {
+        cout<<i<<" : ";
+        for(int j=0;j<sccGraph[i].size();j++)
+        {
+            cout<<sccGraph[i][j]<<" ";
+        }
+        cout<<"\n";
+    }
+}
+
+
+void TopologicalSortAndCheckMax() // 여기 만들자
+{
+
 }
 
 int main()

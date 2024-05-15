@@ -37,6 +37,11 @@ int nowGroupId;
 int sccId[ARRAYLIMIT];
 bool isDfsFinished[ARRAYLIMIT];
 
+int indegreeScc[ARRAYLIMIT];
+int sccGraphValue[ARRAYLIMIT];
+int maxValueSccGraph[ARRAYLIMIT];
+
+queue<int> qForDfs;
 
 
 void Initialize()
@@ -48,6 +53,9 @@ void Initialize()
     sccGraph.assign(ARRAYLIMIT,vector<int>(0,0));
     memset(nodeGroupIdSet,0,sizeof(nodeGroupIdSet));
     memset(sccId,-1,sizeof(sccId));
+    memset(indegreeScc,0,sizeof(indegreeScc));
+    memset(sccGraphValue,0,sizeof(sccGraphValue));
+    memset(maxValueSccGraph,0,sizeof(maxValueSccGraph));
     memset(isDfsFinished,false,sizeof(isDfsFinished));
     memset(isRestaurantInRoad,false,sizeof(isRestaurantInRoad));
     memset(isRestaurantInSccGraph,false,sizeof(isRestaurantInSccGraph));
@@ -144,8 +152,10 @@ void MakeNewGraphByScc()
         for(int j=0;j<road[i].size();j++)
         {
             int targetNodeInRoad = road[i][j]; 
-            if(sccId[i] == sccId[targetNodeInRoad]) continue;
+            if(sccId[i] == sccId[targetNodeInRoad])
+                continue;
             sccGraph[sccId[i]].push_back(sccId[targetNodeInRoad]);
+            indegreeScc[sccId[targetNodeInRoad]]++;
         }
     }
 }
@@ -164,11 +174,36 @@ void PrintNewGraphByScc()
     }
 }
 
-
-void TopologicalSortAndCheckMax() // 여기 만들자
+void SetSccGraphValue()
 {
-
+    for(int i=1;i<=icCount;i++)
+    {
+        sccGraphValue[sccId[i]] += icValue[i];
+    }
 }
+
+void TopologicalSortAndCheckMax() // dp 부분 구현해야함. 위상정렬도 잘되는지 확인 해볼것
+{
+    for(int i=1;i<=scc.size();i++)
+    {
+        if(indegreeScc[i]==0) qForDfs.push(i);
+    }
+
+    while(!qForDfs.empty())
+    {
+        int curNode = qForDfs.front();
+        qForDfs.pop();
+        
+        for(int i=0;i<=sccGraph[curNode].size();i++)
+        {
+            int linkWithCur = sccGraph[curNode][i];
+            indegreeScc[linkWithCur]--;
+            if(indegreeScc[linkWithCur] == 0) qForDfs.push(linkWithCur);
+        }
+    }
+}
+
+
 
 int main()
 {

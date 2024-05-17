@@ -15,7 +15,7 @@ using namespace std;
 
 // ic와 레스토랑 모두 정점의 종류임. 목적지는 레스토랑, ic는 목적지가 될 수 없음
 
-const int ARRAYLIMIT = 10002;
+const int ARRAYLIMIT = 500002;
 
 
 int icCount,roadCount;
@@ -24,7 +24,7 @@ int moneyAmount;
 int startIcNum, restaurantCount;
 vector<vector<int>> road;
 int headNodeCount[ARRAYLIMIT];
-int icValue[ARRAYLIMIT];
+int icMoney[ARRAYLIMIT];
 bool isRestaurantInRoad[ARRAYLIMIT];
 bool isRestaurantInSccGraph[ARRAYLIMIT];
 
@@ -38,8 +38,8 @@ int sccId[ARRAYLIMIT];
 bool isDfsFinished[ARRAYLIMIT];
 
 int indegreeScc[ARRAYLIMIT];
-int sccGraphValue[ARRAYLIMIT];
-int maxValueSccGraph[ARRAYLIMIT];
+int sccGraphMoney[ARRAYLIMIT];
+int maxMoneySccGraph[ARRAYLIMIT];
 
 queue<int> qForDfs;
 
@@ -48,14 +48,14 @@ void Initialize()
 {
     fastio;
     memset(headNodeCount,0,sizeof(headNodeCount));
-    memset(icValue,0,sizeof(icValue));
+    memset(icMoney,0,sizeof(icMoney));
     road.assign(ARRAYLIMIT,vector<int>(0,0));
     sccGraph.assign(ARRAYLIMIT,vector<int>(0,0));
     memset(nodeGroupIdSet,0,sizeof(nodeGroupIdSet));
     memset(sccId,-1,sizeof(sccId));
     memset(indegreeScc,0,sizeof(indegreeScc));
-    memset(sccGraphValue,0,sizeof(sccGraphValue));
-    memset(maxValueSccGraph,0,sizeof(maxValueSccGraph));
+    memset(sccGraphMoney,0,sizeof(sccGraphMoney));
+    memset(maxMoneySccGraph,0,sizeof(maxMoneySccGraph));
     memset(isDfsFinished,false,sizeof(isDfsFinished));
     memset(isRestaurantInRoad,false,sizeof(isRestaurantInRoad));
     memset(isRestaurantInSccGraph,false,sizeof(isRestaurantInSccGraph));
@@ -73,7 +73,7 @@ void GetInput()
         headNodeCount[icTail]++;
     }
     for(int i=1;i<=icCount;i++)
-       cin>>icValue[i];
+       cin>>icMoney[i];
 
     cin>>startIcNum>>restaurantCount;
     for(int i=1;i<=restaurantCount;i++){
@@ -94,7 +94,7 @@ void Printinput()
         cout<<"\n";
     }
     for(int i=1;i<=icCount;i++)
-       cout<<icValue[i]<<" ";
+       cout<<icMoney[i]<<" ";
     cout<<"\n";
 
     cout<<startIcNum<<restaurantCount;
@@ -174,11 +174,13 @@ void PrintNewGraphByScc()
     }
 }
 
-void SetSccGraphValue()
+void SetSccGraphMoneyAndRestaurant()
 {
     for(int i=1;i<=icCount;i++)
     {
-        sccGraphValue[sccId[i]] += icValue[i];
+        sccGraphMoney[sccId[i]] += icMoney[i];
+        if(!isRestaurantInSccGraph[sccId[i]])
+            isRestaurantInSccGraph[sccId[i]] = isRestaurantInRoad[i];
     }
 }
 
@@ -189,18 +191,57 @@ void TopologicalSortAndCheckMax() // dp 부분 구현해야함. 위상정렬도 
         if(indegreeScc[i]==0) qForDfs.push(i);
     }
 
+    maxMoneySccGraph[sccId[startIcNum]] = sccGraphMoney[sccId[startIcNum]];
+    bool flag=false;
     while(!qForDfs.empty())
     {
         int curNode = qForDfs.front();
         qForDfs.pop();
         
-        for(int i=0;i<=sccGraph[curNode].size();i++)
+        
+        if(sccId[startIcNum]==curNode) flag=true;
+
+        for(int i=0;i<sccGraph[curNode].size();i++)
         {
             int linkWithCur = sccGraph[curNode][i];
+            
+            if(flag)
+                maxMoneySccGraph[linkWithCur] = max(maxMoneySccGraph[linkWithCur], maxMoneySccGraph[curNode]+sccGraphMoney[linkWithCur]);
+
             indegreeScc[linkWithCur]--;
-            if(indegreeScc[linkWithCur] == 0) qForDfs.push(linkWithCur);
-        }
+            if(indegreeScc[linkWithCur] == 0) 
+                qForDfs.push(linkWithCur);
+            }
     }
+}
+
+void PrintMaxMoneySccGraph()
+{
+    cout<<"\n<maxMoney>\n";
+    for(int i=1;i<=scc.size();i++)
+    {
+        cout<<maxMoneySccGraph[i]<<" ";
+    }
+}
+
+void PrintIsRestaurantScc()
+{
+    cout<<"\n<IsRestaurant>\n";
+    for(int i=1;i<=scc.size();i++)
+    {
+        cout<<isRestaurantInSccGraph[i]<<" ";
+    }
+}
+
+int FindMaxMoneyRestaurant()
+{
+    int maxMoneyRestaurant=0;
+    for(int i=1;i<=scc.size();i++)
+    {
+        if(!isRestaurantInSccGraph[i]) continue;
+        maxMoneyRestaurant = max(maxMoneyRestaurant, maxMoneySccGraph[i]);
+    }
+    return maxMoneyRestaurant;
 }
 
 
@@ -215,8 +256,10 @@ int main()
             FindSccWithTarzan(i);
     }
 
-    PrintScc();
     MakeNewGraphByScc();
-    PrintNewGraphByScc();
-    
+    SetSccGraphMoneyAndRestaurant();
+    TopologicalSortAndCheckMax();
+    //PrintIsRestaurantScc();
+    //PrintMaxMoneySccGraph();
+    cout<<FindMaxMoneyRestaurant();
 }

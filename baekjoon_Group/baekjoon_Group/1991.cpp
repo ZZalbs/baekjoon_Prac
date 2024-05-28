@@ -24,9 +24,15 @@ class Node
         Node right;
     Node(char value)
     {
-        data = value;
+        this.data = value;
+        this.left = null;
+        this.right = null;
     }
 }
+
+
+Node tree[27];
+
 
 int main()
 {
@@ -36,7 +42,6 @@ int main()
     {
         char nodeName, leftNode, rightNode;
         cin>>nodeName>>leftNode>>rightNode;
-        if(leftNode=='.') leftNode = null;
-        Node(node);
+        tree[nodeName-'A'].data = nodeName;
     }
 }

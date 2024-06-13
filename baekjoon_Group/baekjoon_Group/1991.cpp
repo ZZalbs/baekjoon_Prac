@@ -16,32 +16,62 @@ using namespace std;
 
 int nodeCount;
 
-class Node
+struct Node
 {
-    public:
-        char data;
-        Node left;
-        Node right;
-    Node(char value)
-    {
-        this.data = value;
-        this.left = null;
-        this.right = null;
-    }
+    char data='\0';
+    char left='\0';
+    char right='\0';
+};
+
+typedef struct Node tree;
+
+
+void PreOrder(char node)
+{
+    if(node == NULL) return;
+    cout<<node;
+    PreOrder(tree[node-'A'].left);
+    PreOrder(tree[node-'A'].right);
 }
 
+void InOrder(char node)
+{
+    if(node == NULL) return;
+    
+    InOrder(tree[node-'A'].left);
+    cout<<node;
+    InOrder(tree[node-'A'].right);
+}
 
-Node tree[27];
-
+void PostOrder(char node)
+{
+    if(node == NULL) return;
+    
+    PostOrder(tree[node-'A'].left);
+    PostOrder(tree[node-'A'].right);
+    cout<<node;
+}
 
 int main()
 {
     fastio;
+    tree tree[27];
     cin>>nodeCount;
     for(int i=0;i<nodeCount;i++)
     {
         char nodeName, leftNode, rightNode;
         cin>>nodeName>>leftNode>>rightNode;
-        tree[nodeName-'A'].data = nodeName;
+        Node& nowNode = tree[nodeName-'A'];
+        nowNode = new Node(nodeName);
+        if(leftNode!='.')   nowNode.left = leftNode;
+        if(rightNode!='.')  nowNode.right = rightNode;
+        
     }
+PreOrder(tree[0].data);
+cout<<"\n";
+InOrder(tree[0].data);
+cout<<"\n";
+PostOrder(tree[0].data);
+cout<<"\n";
+
 }

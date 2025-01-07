@@ -3,6 +3,7 @@
     "files.associations": {
         "cmath": "cpp",
         "iostream": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "sstream": "cpp"
     }
 }
